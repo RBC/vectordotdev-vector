@@ -15,16 +15,7 @@ generated: components: transforms: tag_cardinality_limit: configuration: {
 	internal_metrics: {
 		description: "Configuration of internal metrics for the TagCardinalityLimit transform."
 		required:    false
-		type: object: options: include_extended_tags: {
-			description: """
-				Whether to include extended tags (metric_name, tag_key) in the `tag_value_limit_exceeded_total` metric.
-
-				This helps identify which metrics and tag keys are hitting cardinality limits, but can significantly
-				increase metric cardinality. Defaults to `false` because these tags have potentially unbounded cardinality.
-				"""
-			required: false
-			type: bool: default: false
-		}
+		type:        _schemaDefinitions["vector::transforms::tag_cardinality_limit::config::InternalMetricsConfig"]
 	}
 	limit_exceeded_action: {
 		description: """
@@ -104,16 +95,7 @@ generated: components: transforms: tag_cardinality_limit: configuration: {
 				internal_metrics: {
 					description: "Configuration of internal metrics for the TagCardinalityLimit transform."
 					required:    false
-					type: object: options: include_extended_tags: {
-						description: """
-																				Whether to include extended tags (metric_name, tag_key) in the `tag_value_limit_exceeded_total` metric.
-
-																				This helps identify which metrics and tag keys are hitting cardinality limits, but can significantly
-																				increase metric cardinality. Defaults to `false` because these tags have potentially unbounded cardinality.
-																				"""
-						required: false
-						type: bool: default: false
-					}
+					type:        _schemaDefinitions["vector::transforms::tag_cardinality_limit::config::InternalMetricsConfig"]
 				}
 				limit_exceeded_action: {
 					description: """
@@ -154,35 +136,15 @@ generated: components: transforms: tag_cardinality_limit: configuration: {
 						- `mode: excluded` — opt this tag out of tracking entirely.
 
 						All other settings (tracking algorithm, `limit_exceeded_action`, etc.)
-						are inherited from the enclosing per-metric configuration.
+						are inherited from the enclosing per-metric configuration, except
+						`cache_size_per_key`, which can be overridden per tag in probabilistic mode.
 						Tags not listed here use the per-metric configuration.
 						"""
 					required: false
 					type: object: options: "*": {
 						description: "An individual tag configuration."
 						required:    true
-						type: object: options: {
-							mode: {
-								description: "Controls how this tag key is handled."
-								required:    true
-								type: string: enum: {
-									excluded: """
-																											Opt this tag out of cardinality tracking entirely. All values pass through
-																											without being recorded or checked against any `value_limit`.
-																											"""
-									limit_override: """
-																											Track this tag with a per-tag value limit. The enclosing per-metric tracking
-																											algorithm and all other settings still apply.
-																											"""
-								}
-							}
-							value_limit: {
-								description:   "Maximum number of distinct values to accept for this tag key."
-								relevant_when: "mode = \"limit_override\""
-								required:      true
-								type: uint: {}
-							}
-						}
+						type:        _schemaDefinitions["vector::transforms::tag_cardinality_limit::config::PerTagConfig"]
 					}
 				}
 				value_limit: {
@@ -206,28 +168,7 @@ generated: components: transforms: tag_cardinality_limit: configuration: {
 		type: object: options: "*": {
 			description: "An individual tag configuration."
 			required:    true
-			type: object: options: {
-				mode: {
-					description: "Controls how this tag key is handled."
-					required:    true
-					type: string: enum: {
-						excluded: """
-																			Opt this tag out of cardinality tracking entirely. All values pass through
-																			without being recorded or checked against any `value_limit`.
-																			"""
-						limit_override: """
-																			Track this tag with a per-tag value limit. The enclosing per-metric tracking
-																			algorithm and all other settings still apply.
-																			"""
-					}
-				}
-				value_limit: {
-					description:   "Maximum number of distinct values to accept for this tag key."
-					relevant_when: "mode = \"limit_override\""
-					required:      true
-					type: uint: {}
-				}
-			}
+			type:        _schemaDefinitions["vector::transforms::tag_cardinality_limit::config::PerTagConfig"]
 		}
 	}
 	tracking_scope: {
